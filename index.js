@@ -193,9 +193,7 @@ export const init = async function () {
   }
 }
 
-export const shield = {
-  init, verifyLogin, tokenStore, getAuthUrl, logout
-}
+
 
 async function sendCodeToServer(code) {
   const server = `https://shield-dev.appblox.io/auth/get-token?grant_type=authorization_code&code=${code}&redirect_uri=${base}`;
@@ -214,4 +212,8 @@ async function sendCodeToServer(code) {
   } catch (error) {
     console.log(error);
   }
+}
+
+export const shield = {
+  init, verifyLogin, tokenStore, getAuthUrl, logout
 }
