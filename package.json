@@ -16,5 +16,8 @@
     "query-string": "^7.1.1",
     "react": "^17.0.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "dotenv": "^16.0.0",
+    "path": "^0.12.7"
+  }
 }
