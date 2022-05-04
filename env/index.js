@@ -40,4 +40,4 @@ const init = () => {
   dotenv.config({ path: envPath });
 };
 
-export default { init };
+export const env = { init };
