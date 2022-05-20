@@ -87,7 +87,7 @@ const tokenStore = new TokenStore()
 
 const refreshAccessToken = async () => {
   console.log('calling refresh access token')
-  const server = 'https://shield-dev.appblox.io/refresh-token'
+  const server = 'https://shield.appblox.io/refresh-token'
   try {
     const res = await fetch(server, {
       method: 'POST',
@@ -139,7 +139,7 @@ export const verifyLogin = async () => {
   }
 }
 const validateAccessToken = async () => {
-  const server = `https://shield-dev.appblox.io/validate-appblox-acess-token`
+  const server = `https://shield.appblox.io/validate-appblox-acess-token`
   try {
     const res = await fetch(server, {
       method: 'GET',
@@ -156,7 +156,7 @@ const validateAccessToken = async () => {
   }
 }
 const shieldLogout = async () => {
-  const server = `https://shield-dev.appblox.io/logout`
+  const server = `https://shield.appblox.io/logout`
   try {
     const res = await fetch(server, {
       method: 'POST',
@@ -203,7 +203,7 @@ export const init = async function (id) {
 }
 
 async function sendCodeToServer(code) {
-  const server = `https://shield-dev.appblox.io/auth/get-token?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
+  const server = `https://shield.appblox.io/auth/get-token?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
   try {
     const res = await fetch(server, {
       method: 'GET',
