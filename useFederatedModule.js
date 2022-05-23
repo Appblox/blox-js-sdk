@@ -1,6 +1,6 @@
 
 import { loadComponent } from './utils'
-import useDynamicScript from './useDynamicScript';
+import {useDynamicScript} from './useDynamicScript';
 
 
 const scriptCache = new Map();

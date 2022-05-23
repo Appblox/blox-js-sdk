@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import qs from 'query-string'
 
 const base = window.location.origin
@@ -6,8 +7,7 @@ const authorizationEndpoint = 'https://shield-dev.appblox.io/login'
 
 const getCodeInUrl = function () {
   const parsedQuery = qs.parseUrl(window.location.href)
-  const code = parsedQuery.query.code
-  return code
+  return parsedQuery.query.code
 }
 
 class TokenStore {
@@ -16,15 +16,23 @@ class TokenStore {
       this.initRefreshCycle()
     }
   }
+
   t
+
   rt
+
   te
+
   sendRefreshBefore = 10000
+
   timeoutHandle
+
   setToken(token) {
     this.t = token
     localStorage.setItem('_ab_t', token)
   }
+  
+  // eslint-disable-next-line consistent-return
   initRefreshCycle() {
     clearTimeout(this.timeoutHandle)
     let expiresIn = this.getExpiry()
@@ -46,37 +54,46 @@ class TokenStore {
       )
       return null
     }
-    timer = parseInt(timer) - this.sendRefreshBefore
+    timer = parseInt(timer, 10) - this.sendRefreshBefore
     console.log('valid expiry time ', new Date().getTime(), expiresIn, timer)
     this.timeoutHandle = setTimeout(() => {
+      // eslint-disable-next-line no-use-before-define
       refreshAccessToken()
     }, timer)
   }
+
   setExpiry(timestamp) {
     this.te = timestamp
     localStorage.setItem('_ab_t_e', timestamp)
   }
+
   getExpiry() {
     return this.te || localStorage.getItem('_ab_t_e')
   }
+
   removeToken(token) {
     this.t = token
     localStorage.removeItem('_ab_t')
   }
+
   setRefreshToken(token) {
     this.rt = token
     localStorage.setItem('_ab_rt', token)
   }
+
   removeRefreshToken(token) {
     this.rt = token
     localStorage.removeItem('_ab_rt')
   }
+
   getToken() {
     return this.t || localStorage.getItem('_ab_t')
   }
+
   getRefreshToken() {
     return this.rt || localStorage.getItem('_ab_rt')
   }
+
   clearTokens() {
     this.removeRefreshToken()
     this.removeToken()
@@ -84,6 +101,58 @@ class TokenStore {
 }
 
 const tokenStore = new TokenStore()
+
+// eslint-disable-next-line consistent-return
+const validateAccessToken = async () => {
+  const server = `https://shield-dev.appblox.io/validate-appblox-acess-token`
+  try {
+    const res = await fetch(server, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${tokenStore.getToken()}`,
+      },
+    })
+    const data = await res.json() // access token set to appblox io cookie
+
+    return data.data && data.data === 'valid'
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const getAuthUrl = () => {
+  const oAuthQueryParams = {
+    response_type: 'code',
+    scope: 'user private_repo',
+    redirect_uri: base,
+    client_id: clientId,
+    state: 'state123',
+  }
+
+  const query = qs.stringify(oAuthQueryParams)
+
+  const authorizationUrl = `${authorizationEndpoint}?${query}`
+  return authorizationUrl
+}
+
+// eslint-disable-next-line consistent-return
+export const verifyLogin = async () => {
+  const token = tokenStore.getToken()
+  if (!token) {
+    const authorizationUrl = getAuthUrl()
+    window.location = authorizationUrl
+  } else {
+    const isValid = await validateAccessToken()
+    if (!isValid) {
+      const authorizationUrl = getAuthUrl()
+      window.location = authorizationUrl
+    }
+    return isValid
+  }
+}
+
+
 
 const refreshAccessToken = async () => {
   console.log('calling refresh access token')
@@ -117,44 +186,8 @@ const refreshAccessToken = async () => {
   }
 }
 
-export const logout = async () => {
-  await shieldLogout()
-  tokenStore.removeRefreshToken()
-  tokenStore.removeToken()
 
-  await verifyLogin()
-}
-export const verifyLogin = async () => {
-  let token = tokenStore.getToken()
-  if (!token) {
-    const authorizationUrl = getAuthUrl()
-    window.location = authorizationUrl
-  } else {
-    const isValid = await validateAccessToken()
-    if (!isValid) {
-      const authorizationUrl = getAuthUrl()
-      window.location = authorizationUrl
-    }
-    return isValid
-  }
-}
-const validateAccessToken = async () => {
-  const server = `https://shield-dev.appblox.io/validate-appblox-acess-token`
-  try {
-    const res = await fetch(server, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${tokenStore.getToken()}`,
-      },
-    })
-    const data = await res.json() // access token set to appblox io cookie
-
-    return data.data && data.data === 'valid'
-  } catch (error) {
-    console.log(error)
-  }
-}
+// eslint-disable-next-line consistent-return
 const shieldLogout = async () => {
   const server = `https://shield-dev.appblox.io/logout`
   try {
@@ -172,36 +205,15 @@ const shieldLogout = async () => {
     console.log(error)
   }
 }
-const getAuthUrl = () => {
-  const oAuthQueryParams = {
-    response_type: 'code',
-    scope: 'user private_repo',
-    redirect_uri: base,
-    client_id: clientId,
-    state: 'state123',
-  }
+export const logout = async () => {
+  await shieldLogout()
+  tokenStore.removeRefreshToken()
+  tokenStore.removeToken()
 
-  const query = qs.stringify(oAuthQueryParams)
-
-  const authorizationUrl = `${authorizationEndpoint}?${query}`
-  return authorizationUrl
+  await verifyLogin()
 }
 
-export const init = async function (id) {
-  clientId = id
-  const code = getCodeInUrl()
-  // var cookie;
-  if (code) {
-    const tokenData = await sendCodeToServer(code)
-    if (tokenData.success && tokenData.data) {
-      tokenStore.setToken(tokenData.data.ab_at)
-      tokenStore.setExpiry(tokenData.data.expires_in)
-      tokenStore.setRefreshToken(tokenData.data.ab_rt)
-      tokenStore.initRefreshCycle()
-    }
-  }
-}
-
+// eslint-disable-next-line consistent-return
 async function sendCodeToServer(code) {
   const server = `https://shield-dev.appblox.io/auth/get-token?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
   try {
@@ -219,6 +231,23 @@ async function sendCodeToServer(code) {
     console.log(error)
   }
 }
+
+export const init = async function (id) {
+  clientId = id
+  const code = getCodeInUrl()
+  // var cookie;
+  if (code) {
+    const tokenData = await sendCodeToServer(code)
+    if (tokenData.success && tokenData.data) {
+      tokenStore.setToken(tokenData.data.ab_at)
+      tokenStore.setExpiry(tokenData.data.expires_in)
+      tokenStore.setRefreshToken(tokenData.data.ab_rt)
+      tokenStore.initRefreshCycle()
+    }
+  }
+}
+
+
 
 export const shield = {
   init,

@@ -33,6 +33,7 @@ export const useDynamicScript = (url, React) => {
 
     document.head.appendChild(element);
 
+    // eslint-disable-next-line consistent-return
     return () => {
       urlCache.delete(url);
       document.head.removeChild(element);
