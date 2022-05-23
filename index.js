@@ -1,2 +1,2 @@
-export * from './blox-js-sdk'
+export * from './sheild'
 export * from './ab-federation-helpers'
