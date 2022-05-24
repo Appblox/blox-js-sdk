@@ -13,7 +13,7 @@ ab-federation-helpers contains hooks and methods to facilitate federated Compone
 
 Installation
 ---------------
-        npm i git+https://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:x-oauth-basic@github.com/Appblox/blox-js-sdk.git
+        npm i blox-js-sdk
 
 Usage
 -----
@@ -46,7 +46,7 @@ Its used to initialise the tokenstore with values from the shield backend. It ta
 
 #### Usage
 
-    await shield.init('dev-app-6303')
+    await shield.init('#client-id')
 
 ## verifyLogin
 
