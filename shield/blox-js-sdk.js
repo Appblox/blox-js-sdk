@@ -2,7 +2,7 @@ import qs from 'query-string'
 
 const base = window.location.origin
 let clientId = null
-const authorizationEndpoint = 'https://shield-dev.appblox.io/login'
+const authorizationEndpoint = 'https://shield.appblox.io/login'
 
 const getCodeInUrl = function () {
   const parsedQuery = qs.parseUrl(window.location.href)
@@ -142,7 +142,7 @@ const validateAccessToken = async () => {
   const server = `https://shield.appblox.io/validate-appblox-acess-token`
   try {
     const res = await fetch(server, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${tokenStore.getToken()}`,
@@ -226,4 +226,5 @@ export const shield = {
   tokenStore,
   getAuthUrl,
   logout,
+  validateAccessToken,
 }
