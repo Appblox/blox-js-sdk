@@ -1,17 +1,15 @@
 blox-js-sdk
 ===========
 
-blox-js-sdk provides the essential packages to facilitate appblox features across appblox applications.
+Client libraries includes methods to use SHIELD, libraries to ease the use of Webpack Module Federation - Promise based loading. It provides the essential packages to facilitate appblox features across appblox applications.
 
 As of now, blox-js-sdk contains the following
-- [shield](#shield) : methods to use SHIELD
-- [ab-federation-helpers](#ab-federation-helpers) : libraries to ease the use of Webpack Module Federation - Promise based loading.
+- [shield](#shield)
+- [ab-federation-helpers](#ab-federation-helpers)
 
 shield helps to setup authentication for your application. It contains many methods to setup user authentication with shield and obtain tokens across appblox applications.
 
 ab-federation-helpers contains hooks and methods to facilitate federated Components and Modules
-
-Currently blox-js-sdk is maintained in a private git repo.
 
 Installation
 ---------------
