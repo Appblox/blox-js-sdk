@@ -2,7 +2,7 @@ import qs from 'query-string'
 
 const base = window.location.origin
 let clientId = null
-const authorizationEndpoint = 'https://shield-dev.appblox.io/login'
+const authorizationEndpoint = 'https://shield.appblox.io/'
 
 const getCodeInUrl = function () {
   const parsedQuery = qs.parseUrl(window.location.href)
@@ -124,15 +124,15 @@ export const logout = async () => {
 
   await verifyLogin()
 }
-export const verifyLogin = async () => {
+export const verifyLogin = async (mode = 'login') => {
   let token = tokenStore.getToken()
   if (!token) {
-    const authorizationUrl = getAuthUrl()
+    const authorizationUrl = getAuthUrl(mode)
     window.location = authorizationUrl
   } else {
     const isValid = await validateAccessToken()
     if (!isValid) {
-      const authorizationUrl = getAuthUrl()
+      const authorizationUrl = getAuthUrl(mode)
       window.location = authorizationUrl
     }
     return isValid
@@ -172,7 +172,7 @@ const shieldLogout = async () => {
     console.log(error)
   }
 }
-const getAuthUrl = () => {
+const getAuthUrl = (mode) => {
   const oAuthQueryParams = {
     response_type: 'code',
     scope: 'user private_repo',
@@ -183,7 +183,7 @@ const getAuthUrl = () => {
 
   const query = qs.stringify(oAuthQueryParams)
 
-  const authorizationUrl = `${authorizationEndpoint}?${query}`
+  const authorizationUrl = `${authorizationEndpoint}${mode}?${query}`
   return authorizationUrl
 }
 
@@ -226,4 +226,6 @@ export const shield = {
   tokenStore,
   getAuthUrl,
   logout,
+  validateAccessToken,
+  verifyLogin,
 }
