@@ -146,13 +146,14 @@ export const verifyLogin = async () => {
   }
 }
 const validateAccessToken = async () => {
-  const server = `https://shield-dev.appblox.io/validate-appblox-acess-token`
+  const server = `https://shield.appblox.io/verify-appblox-acess-token`
   try {
     const res = await fetch(server, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${tokenStore.getToken()}`,
+        'Client-Id':clientId
       },
     })
     const data = await res.json() // access token set to appblox io cookie
