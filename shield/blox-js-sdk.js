@@ -2,7 +2,9 @@ import qs from 'query-string'
 
 const base = window.location.origin
 let clientId = null
-const authorizationEndpoint = 'https://shield.appblox.io/'
+const authorizationEndpoint = (process.env && process.env.SHIELD_AUTH_URL) ? process.env.SHIELD_AUTH_URL : 'https://shield.appblox.io/';
+const refreshEndPoint = (process.env && process.env.SHIELD_REFRESH_URL) ? process.env.SHIELD_REFRESH_URL : 'https://shield.appblox.io/refresh-token';
+const tokenEndpoint = (process.env && process.env.SHIELD_TOKEN_URL) ? process.env.SHIELD_TOKEN_URL : 'https://shield.appblox.io/auth/get-token';
 
 const getCodeInUrl = function () {
   const parsedQuery = qs.parseUrl(window.location.href)
@@ -87,7 +89,7 @@ const tokenStore = new TokenStore()
 
 const refreshAccessToken = async () => {
   console.log('calling refresh access token')
-  const server = 'https://shield.appblox.io/refresh-token'
+  const server = refreshEndPoint;
   try {
     const res = await fetch(server, {
       method: 'POST',
@@ -203,7 +205,7 @@ export const init = async function (id) {
 }
 
 async function sendCodeToServer(code) {
-  const server = `https://shield.appblox.io/auth/get-token?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
+  const server = `${tokenEndpoint}?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
   try {
     const res = await fetch(server, {
       method: 'GET',
