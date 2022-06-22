@@ -2,9 +2,10 @@ import qs from 'query-string'
 
 const base = window.location.origin
 let clientId = null
-const authorizationEndpoint = (process.env && process.env.SHIELD_AUTH_URL) ? process.env.SHIELD_AUTH_URL : 'https://shield.appblox.io/';
-const refreshEndPoint = (process.env && process.env.SHIELD_REFRESH_URL) ? process.env.SHIELD_REFRESH_URL : 'https://shield.appblox.io/refresh-token';
-const tokenEndpoint = (process.env && process.env.SHIELD_TOKEN_URL) ? process.env.SHIELD_TOKEN_URL : 'https://shield.appblox.io/auth/get-token';
+const authorizationEndpoint =
+  process.env && process.env.SHIELD_AUTH_URL
+    ? process.env.SHIELD_AUTH_URL
+    : 'https://shield.appblox.io/'
 
 const getCodeInUrl = function () {
   const parsedQuery = qs.parseUrl(window.location.href)
@@ -89,7 +90,7 @@ const tokenStore = new TokenStore()
 
 const refreshAccessToken = async () => {
   console.log('calling refresh access token')
-  const server = refreshEndPoint;
+  const server = `${authorizationEndpoint}/refresh-token`
   try {
     const res = await fetch(server, {
       method: 'POST',
@@ -141,7 +142,7 @@ export const verifyLogin = async (mode = 'login') => {
   }
 }
 const validateAccessToken = async () => {
-  const server = `https://shield.appblox.io/validate-appblox-acess-token`
+  const server = `${authorizationEndpoint}validate-appblox-acess-token`
   try {
     const res = await fetch(server, {
       method: 'GET',
@@ -158,7 +159,7 @@ const validateAccessToken = async () => {
   }
 }
 const shieldLogout = async () => {
-  const server = `https://shield.appblox.io/logout`
+  const server = `${authorizationEndpoint}logout`
   try {
     const res = await fetch(server, {
       method: 'POST',
@@ -205,7 +206,7 @@ export const init = async function (id) {
 }
 
 async function sendCodeToServer(code) {
-  const server = `${tokenEndpoint}?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
+  const server = `${authorizationEndpoint}auth/get-token?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
   try {
     const res = await fetch(server, {
       method: 'GET',
