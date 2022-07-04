@@ -1,7 +1,11 @@
 import qs from 'query-string'
 
 const base = window.location.origin
-const authorizationEndpoint = 'https://shield-dev.appblox.io/login'
+let clientId = null
+const authorizationEndpoint =
+  process.env && process.env.SHIELD_AUTH_URL
+    ? process.env.SHIELD_AUTH_URL
+    : 'https://shield.appblox.io/'
 
 const getCodeInUrl = function () {
   const parsedQuery = qs.parseUrl(window.location.href)
@@ -96,7 +100,7 @@ const tokenStore = new TokenStore()
 
 const refreshAccessToken = async () => {
   console.log('calling refresh access token')
-  const server = 'https://shield.appblox.io/refresh-token'
+  const server = `${authorizationEndpoint}/refresh-token`
   try {
     const res = await fetch(server, {
       method: 'POST',
@@ -133,22 +137,22 @@ export const logout = async () => {
 
   await verifyLogin()
 }
-export const verifyLogin = async () => {
+export const verifyLogin = async (mode = 'login') => {
   let token = tokenStore.getToken()
   if (!token) {
-    const authorizationUrl = getAuthUrl()
+    const authorizationUrl = getAuthUrl(mode)
     window.location = authorizationUrl
   } else {
     const isValid = await validateAccessToken()
     if (!isValid) {
-      const authorizationUrl = getAuthUrl()
+      const authorizationUrl = getAuthUrl(mode)
       window.location = authorizationUrl
     }
     return isValid
   }
 }
 const validateAccessToken = async () => {
-  const server = `https://shield.appblox.io/validate-appblox-acess-token`
+  const server = `${authorizationEndpoint}validate-appblox-acess-token`
   try {
     const res = await fetch(server, {
       method: 'GET',
@@ -165,7 +169,7 @@ const validateAccessToken = async () => {
   }
 }
 const shieldLogout = async () => {
-  const server = `https://shield.appblox.io/logout`
+  const server = `${authorizationEndpoint}logout`
   try {
     const res = await fetch(server, {
       method: 'POST',
@@ -181,7 +185,7 @@ const shieldLogout = async () => {
     console.log(error)
   }
 }
-const getAuthUrl = () => {
+const getAuthUrl = (mode) => {
   const oAuthQueryParams = {
     response_type: 'code',
     scope: 'user private_repo',
@@ -192,7 +196,7 @@ const getAuthUrl = () => {
 
   const query = qs.stringify(oAuthQueryParams)
 
-  const authorizationUrl = `${authorizationEndpoint}?${query}`
+  const authorizationUrl = `${authorizationEndpoint}${mode}?${query}`
   return authorizationUrl
 }
 
@@ -212,7 +216,7 @@ export const init = async function (id) {
 }
 
 async function sendCodeToServer(code) {
-  const server = `https://shield.appblox.io/auth/get-token?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
+  const server = `${authorizationEndpoint}auth/get-token?grant_type=authorization_code&code=${code}&redirect_uri=${base}`
   try {
     const res = await fetch(server, {
       method: 'GET',
@@ -235,4 +239,6 @@ export const shield = {
   tokenStore,
   getAuthUrl,
   logout,
+  validateAccessToken,
+  verifyLogin,
 }
