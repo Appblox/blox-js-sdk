@@ -1,7 +1,6 @@
 import qs from 'query-string'
 
 const base = window.location.origin
-let clientId = null
 const authorizationEndpoint = 'https://shield-dev.appblox.io/login'
 
 const getCodeInUrl = function () {
@@ -16,9 +15,19 @@ class TokenStore {
       this.initRefreshCycle()
     }
   }
+  get clientId() {
+    return this._client_id;
+  }
+  set clientId(id) {
+    if (id) {
+      this._client_id = id;
+    }
+  }
+
   t
   rt
   te
+  _client_id = null;
   sendRefreshBefore = 10000
   timeoutHandle
   setToken(token) {
@@ -177,7 +186,7 @@ const getAuthUrl = () => {
     response_type: 'code',
     scope: 'user private_repo',
     redirect_uri: base,
-    client_id: clientId,
+    client_id: tokenStore.clientId,
     state: 'state123',
   }
 
@@ -188,7 +197,7 @@ const getAuthUrl = () => {
 }
 
 export const init = async function (id) {
-  clientId = id
+  tokenStore.clientId = id;
   const code = getCodeInUrl()
   // var cookie;
   if (code) {
