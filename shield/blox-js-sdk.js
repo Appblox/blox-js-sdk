@@ -100,7 +100,7 @@ const tokenStore = new TokenStore()
 
 const refreshAccessToken = async () => {
   console.log('calling refresh access token')
-  const server = `${authorizationEndpoint}/refresh-token`
+  const server = `${authorizationEndpoint}refresh-token`
   try {
     const res = await fetch(server, {
       method: 'POST',
